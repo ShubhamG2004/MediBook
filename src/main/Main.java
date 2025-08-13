@@ -1,7 +1,9 @@
 package main;
 
+import auth.LoginFrame;
+
 public class Main {
     public static void main(String[] args) {
-        // TODO: Launch application
+        new LoginFrame().setVisible(true);
     }
 }
