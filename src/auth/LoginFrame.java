@@ -1,7 +1,70 @@
 package auth;
 
+import db.DBConnection;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
 
 public class LoginFrame extends JFrame {
-    // TODO: Implement login UI
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+
+    public LoginFrame() {
+        setTitle("Hospital Booking System - Login");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+
+        panel.add(new JLabel("Username:"));
+        usernameField = new JTextField();
+        panel.add(usernameField);
+
+        panel.add(new JLabel("Password:"));
+        passwordField = new JPasswordField();
+        panel.add(passwordField);
+
+        loginButton = new JButton("Login");
+        panel.add(new JLabel(""));
+        panel.add(loginButton);
+
+        add(panel);
+
+        loginButton.addActionListener(e -> login());
+    }
+
+    private void login() {
+        String username = usernameField.getText();
+        String password = String.valueOf(passwordField.getPassword());
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT role FROM users WHERE username = ? AND password = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
+
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                String role = rs.getString("role");
+                JOptionPane.showMessageDialog(this, "Login successful as " + role);
+
+                // Redirect based on role
+                if (role.equals("doctor")) {
+                    new doctor.DoctorPanel().setVisible(true);
+                } else if (role.equals("patient")) {
+                    new patient.PatientPanel().setVisible(true);
+                } else {
+                    new appointment.AppointmentPanel().setVisible(true);
+                }
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid credentials!");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }
