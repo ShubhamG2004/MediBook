@@ -1,4 +1,4 @@
-# MediBook - Medical Appointment Management System
+# MediBook - Hospital Management System
 
 MediBook is a Java Swing application for managing patient records and medical appointments in healthcare facilities.
 
